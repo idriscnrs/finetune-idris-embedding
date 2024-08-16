@@ -29,6 +29,7 @@ def run():
         valid_loader,
         config.epochs,
         config.optimizer_config,
+        scale_fac_type=config.scale_fac_type
     )
 
     with MlTrackContext(config, track=config.track):

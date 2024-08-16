@@ -1,6 +1,6 @@
 import mlflow
 import torch
-from torch import Tensor
+from torch import exp, Tensor
 from torch.nn import CrossEntropyLoss, Module
 from torch.profiler import profile
 from torch.utils.data import DataLoader
@@ -21,6 +21,7 @@ class Trainer:
         valid_loader: DataLoader,
         epochs: int,
         optimizer_config: OptimizerConfig,
+        scale_fac_type: str
     ):
         self.model = model
         self.train_loader = train_loader
@@ -31,6 +32,7 @@ class Trainer:
             total_train_step=len(train_loader) * epochs,
             **optimizer_config.export()
         )
+        self.scale_fac_type = scale_fac_type
         self.step = 0
 
     def infer(self, model_inp: BatchEncoding) -> Tensor:
@@ -40,7 +42,18 @@ class Trainer:
         embedded_question = embedded_sent[::2]
         embedded_context = embedded_sent[1::2]
         similarities_matrix = embedded_question @ embedded_context.T
-        return similarities_matrix * self.model.scale_fac_parameter
+
+        match self.scale_fac_type:
+            case "none":
+                self.scale_fac = Tensor([1]).to("cuda")
+            case "exp":
+                self.scale_fac = exp(self.model.scale_fac_parameter)
+            case "linear":
+                self.scale_fac = self.model.scale_fac_parameter
+            case _:
+                raise ValueError("Unknown scale factor type")
+
+        return similarities_matrix * self.scale_fac
 
     def train_loop(
         self,
@@ -76,7 +89,8 @@ class Trainer:
                     {
                         "loss": loss.item(),
                         "avg_loss": avg_loss,
-                        "scale_factor": self.model.scale_fac_parameter.item()
+                        "scale_factor": self.model.scale_fac.item(),
+                        "scale_parameter": self.model.scale_fac_parameter.item()
                     },
                     step=self.step,
                 )
