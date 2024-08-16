@@ -89,7 +89,7 @@ class Trainer:
                     {
                         "loss": loss.item(),
                         "avg_loss": avg_loss,
-                        "scale_factor": self.model.scale_fac.item(),
+                        "scale_factor": self.scale_fac.item(),
                         "scale_parameter": self.model.scale_fac_parameter.item()
                     },
                     step=self.step,
