@@ -40,7 +40,7 @@ class Trainer:
         embedded_question = embedded_sent[::2]
         embedded_context = embedded_sent[1::2]
         similarities_matrix = embedded_question @ embedded_context.T
-        return similarities_matrix
+        return similarities_matrix * self.model.scale_fac_parameter
 
     def train_loop(
         self,
@@ -73,7 +73,11 @@ class Trainer:
 
             if track:
                 mlflow.log_metrics(
-                    {"loss": loss.item(), "avg_loss": avg_loss},
+                    {
+                        "loss": loss.item(),
+                        "avg_loss": avg_loss,
+                        "scale_factor": self.model.scale_fac_parameter.item()
+                    },
                     step=self.step,
                 )
             loop.set_postfix(loss=loss.item(), avg_loss=avg_loss)

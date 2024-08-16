@@ -3,6 +3,8 @@ from .data import get_dataloader
 from .track_prof import MlTrackContext
 from .trainer import Trainer
 
+import torch
+from torch.nn import Parameter
 from transformers import AutoTokenizer, AutoModel
 
 
@@ -14,6 +16,7 @@ def run():
     model = AutoModel.from_pretrained(
         config.model_path, trust_remote_code=True
     ).to("cuda")
+    model.scale_fac_parameter = Parameter(torch.zeros(1).to("cuda"))
 
     train_loader, valid_loader = get_dataloader(
         **config.data_config.export("kwargs"),
