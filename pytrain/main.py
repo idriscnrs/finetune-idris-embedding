@@ -1,11 +1,11 @@
+import torch
+from torch.nn import Parameter
+from transformers import AutoModel, AutoTokenizer
+
 from .config import GlobalConfig
 from .data import get_dataloader
 from .track_prof import MlTrackContext
 from .trainer import Trainer
-
-import torch
-from torch.nn import Parameter
-from transformers import AutoTokenizer, AutoModel
 
 
 def run():

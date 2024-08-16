@@ -1,12 +1,12 @@
 import mlflow
 import torch
-from torch import exp, Tensor
+from torch import Tensor, exp
 from torch.nn import CrossEntropyLoss, Module
 from torch.profiler import profile
 from torch.utils.data import DataLoader
 from torchmetrics.regression import CosineSimilarity
-from transformers.tokenization_utils_base import BatchEncoding
 from tqdm import tqdm
+from transformers.tokenization_utils_base import BatchEncoding
 
 from .config import OptimizerConfig, ProfilerConfig
 from .optimizer import get_optimizer_scheduler
