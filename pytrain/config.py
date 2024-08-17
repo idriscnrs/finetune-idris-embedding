@@ -258,10 +258,15 @@ class GlobalConfig(Config):
     model_name: str = field(
         default="model", metadata={"converter": str, "export": True, "kwargs": False}
     )
+    save_dir: Path = field(
+        default=Path.cwd() / "finetuned_models",
+        metadata={"converter": Path, "export": False}
+    )
 
     epochs: int = field(default=1, metadata={"converter": int, "export": True})
 
     track: bool = field(default=False, metadata={"converter": bool, "export": False})
+    save: bool = field(default=True, metadata={"converter": bool, "export": False})
     dev_test: bool = field(default=False, metadata={"converter": bool, "export": False})
 
     scale_fac_type: str = field(
@@ -284,6 +289,10 @@ class GlobalConfig(Config):
     @property
     def model_path(self) -> Path:
         return self.models_dir / self.model_name
+
+    @property
+    def save_path(self) -> Path:
+        return self.save_dir / (self.model_name + f"_tuned_{self.run_name}")
 
     def __post_init__(self) -> None:
         super().__post_init__()

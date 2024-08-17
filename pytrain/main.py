@@ -39,6 +39,12 @@ def run():
             profiler_config=config.profiler_config
         )
 
+    if config.save:
+        config.save_path.mkdir(parents=True, exist_ok=True)
+        model.save_pretrained(config.save_path)
+        tokenizer.save_pretrained(config.save_path)
+        print(f"Model saved at {config.save_path}")
+
 
 if __name__ == "__main__":
     run()
